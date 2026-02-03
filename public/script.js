@@ -38,7 +38,7 @@ async function fetchCars(query = '') {
         cars.forEach(car => {
             const card = document.createElement('div');
             card.className = 'car-card';
-            const imgUrl = car.imageUrl || 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=500';
+            const imgUrl = car.imageUrl || 'https://static9.depositphotos.com/1579454/1194/i/450/depositphotos_11943255-stock-photo-presentation-of-the-new-car.jpg';
             
             card.innerHTML = `
                 <div class="card-image" style="background-image: url('${imgUrl}')"></div>
@@ -160,36 +160,35 @@ function logout() {
 
 function showDetails(car) {
     const modalBody = document.getElementById('modal-body');
-    const imgUrl = car.imageUrl || 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=800';
+    const imgUrl = car.imageUrl || 'https://static9.depositphotos.com/1579454/1194/i/450/depositphotos_11943255-stock-photo-presentation-of-the-new-car.jpg';
     
-    let specsHtml = '';
-    if (car.specs && Object.keys(car.specs).length > 0) {
-        specsHtml = `<div class="specs-container" style="margin-top: 20px; border-top: 1px solid #eee; padding-top:15px;">
-                     <h3 style="color: #e74c3c;">Technical Specifications</h3>
-                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">`;
-
-        const renderSpecs = (obj) => {
-            for (const [key, value] of Object.entries(obj)) {
-                if (value && typeof value === 'object') {
-                    renderSpecs(value); 
-                } else if (value && !key.includes('id') && !key.includes('url')) {
-                    const cleanKey = key.replace(/_/g, ' ').toUpperCase();
-                    specsHtml += `<div><strong>${cleanKey}:</strong> ${value}</div>`;
-                }
-            }
-        };
-
-        renderSpecs(car.specs);
-        specsHtml += `</div></div>`;
-    }
+    const specs = car.specs || {};
+    
+    const engine = specs.engine_type || "N/A";
+    const horsepower = specs.horsepower_hp || "N/A";
+    const transmission = specs.transmission || "N/A";
+    const drive = specs.drive_type || "N/A";
+    const fuel = specs.fuel_type || "N/A";
+    const trim = specs.trim_name || "Standard";
 
     modalBody.innerHTML = `
         <div style="width:100%; height:300px; background:url('${imgUrl}') center/cover; border-radius: 8px; margin-bottom:20px;"></div>
-        <h2>${car.brand} ${car.model}</h2>
-        <h3 style="color:#e74c3c;">$${car.price.toLocaleString()}</h3>
-        <p><strong>Year:</strong> ${car.year} | <strong>Condition:</strong> ${car.condition}</p>
-        <p style="margin: 15px 0;">${car.description || 'No description provided.'}</p>
-        ${specsHtml}
+        
+        <div class="details-main">
+            <h2>${car.brand} ${car.model}</h2>
+            <h3 style="color:#e74c3c; font-size: 1.5rem; margin: 10px 0;">$${car.price.toLocaleString()}</h3>
+            <p style="margin-bottom: 10px;"><strong>Condition:</strong> ${car.condition} | <strong>Year:</strong> ${car.year}</p>
+            <p style="color: #555; line-height: 1.6;">${car.description || 'No description provided.'}</p>
+        </div>
+
+        <div class="specs-grid" style="margin-top: 25px; border-top: 2px solid #eee; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="spec-item"><strong>Engine:</strong> ${engine}</div>
+            <div class="spec-item"><strong>Horsepower:</strong> ${horsepower} HP</div>
+            <div class="spec-item"><strong>Transmission:</strong> ${transmission}</div>
+            <div class="spec-item"><strong>Drive Type:</strong> ${drive}</div>
+            <div class="spec-item"><strong>Fuel Type:</strong> ${fuel}</div>
+            <div class="spec-item"><strong>Trim:</strong> ${trim}</div>
+        </div>
     `;
     openModal('details-modal');
 }

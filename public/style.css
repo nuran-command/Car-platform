@@ -10,20 +10,105 @@
 
 body { background-color: #fff; color: #333; }
 
+
 /* --- Navbar --- */
 .navbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 5%; background: rgba(0,0,0,0.9);
-    position: fixed; width: 100%; top: 0; z-index: 1000;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    background: transparent; 
 }
+
+.container-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* Top Bar */
+.nav-top {
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+.nav-contact span { margin-right: 20px; }
+.nav-social a { color: #ccc; margin-left: 15px; transition: 0.3s; }
+.nav-social a:hover { color: var(--primary); }
+
+/* Main Bar */
+.nav-main {
+    background: rgba(10, 10, 10, 0.6);
+    padding: 20px 0;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: 0.3s;
+}
+
+.nav-links a:hover::after, .nav-links a.active::after {
+    width: 100%;
+}
+
+.nav-links .dropdown i {
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.nav-auth i {
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
 .logo { color: white; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
 .logo span { color: var(--primary); }
 
-.nav-links a { color: #ccc; text-decoration: none; margin: 0 15px; font-weight: 500; transition: 0.3s; }
-.nav-links a:hover { color: white; }
-
-.nav-auth { display: flex; align-items: center; gap: 15px; }
-#loginBtn { color: white; text-decoration: none; font-weight: bold; }
+#loginBtn {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
 #logoutBtn { color: white; cursor: pointer; }
 
 /* --- Buttons --- */
@@ -42,8 +127,9 @@ body { background-color: #fff; color: #333; }
 
 /* --- Hero Section --- */
 .hero {
+    padding-top: 100px;
     height: 100vh;
-    background-image: url('images/mercedes.png');
+    background-image: url('images/vincent-raine-pQmtFQZwO60-unsplash.jpg');
     background-size: cover;
     background-position: center;
     position: relative;

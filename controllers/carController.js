@@ -5,25 +5,24 @@ exports.createCar = async (req, res) => {
     try {
       const { brand, model, year, imageUrl, isFeatured } = req.body;
   
-      let specs = {};
+      let apiSpecs = {};
       try {
-          specs = await getCarSpecs(brand, model, year);
+          apiSpecs = await getCarSpecs(brand.trim(), model.trim(), year);
+          console.log("Specs Found:", apiSpecs); 
       } catch (apiError) {
-          console.log("External API failed, continuing without specs...");
+          console.log("External API failed...");
       }
   
       const car = await Car.create({
         ...req.body,
         owner: req.user.id,           
-        specs: specs || {},           
+        specs: apiSpecs || {}, 
         imageUrl: imageUrl || "",
         isFeatured: isFeatured || false
       });
   
       res.status(201).json(car);
-  
     } catch (error) {
-      console.error("Error creating car:", error.message);
       res.status(500).json({ message: "Failed to create car", error: error.message });
     }
 };

@@ -10,16 +10,43 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo">WHEEL<span>HOUSE</span></div>
-        <div class="nav-links">
-            <a href="#" onclick="showSection('home')">Home</a>
-            <a href="#showroom" onclick="showSection('showroom')">Showroom</a>
-            <a href="#" id="dashboardLink" style="display:none;">Dashboard</a>
+        <div class="nav-top">
+            <div class="container-nav">
+                <div class="nav-contact">
+                    <span><i class="fa-solid fa-phone"></i> +7 775 771 19 76</span>
+                    <span><i class="fa-solid fa-location-dot"></i> 992 Luxury Lane, NY</span>
+                </div>
+                <div class="nav-social">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="nav-auth">
-            <a href="#" id="loginBtn" onclick="openModal('auth-modal')">Login</a>
-            <button id="addCarBtn" class="btn-primary" onclick="openModal('add-car-modal')" style="display:none;">+ ADD CAR</button>
-            <a href="#" id="logoutBtn" onclick="logout()" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i></a>
+    
+        <div class="nav-main">
+            <div class="container-nav">
+                <div class="logo">WHEEL<span>HOUSE</span></div>
+                
+                <div class="nav-links">
+                    <a href="#" class="active" onclick="showSection('home')">HOME</a>
+                    <div class="dropdown">
+                        <a href="#showroom">CAR LISTING <i class="fa-solid fa-chevron-down"></i></a>
+                    </div>
+                    <div class="dropdown">
+                        <a href="#">PAGES <i class="fa-solid fa-chevron-down"></i></a>
+                    </div>
+                    <a href="#" id="dashboardLink" style="display:none;">DASHBOARD</a>
+                    <a href="#">CONTACT</a>
+                </div>
+    
+                <div class="nav-auth">
+                    <a href="#" id="searchIcon"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <a href="#" id="loginBtn" onclick="openModal('auth-modal')">LOGIN</a>
+                    <button id="addCarBtn" class="btn-primary" onclick="openModal('add-car-modal')" style="display:none;">+ ADD CAR</button>
+                    <a href="#" id="logoutBtn" onclick="logout()" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -93,7 +120,7 @@
                     <input type="text" id="carModel" placeholder="Model (e.g. A4)" required>
                     <input type="number" id="carYear" placeholder="Year" required>
                     <input type="number" id="carPrice" placeholder="Price ($)" required>
-                    <input type="text" id="carImage" placeholder="Image URL (http://...)" required>
+                    <input type="text" id="carImage" placeholder="Image URL (http://...)">
                     <select id="carCondition">
                         <option value="New">New</option>
                         <option value="Used">Used</option>
