@@ -12,7 +12,11 @@ function checkAuth() {
     document.getElementById('loginBtn').style.display = isLoggedIn ? 'none' : 'block';
     document.getElementById('addCarBtn').style.display = isLoggedIn ? 'block' : 'none';
     document.getElementById('logoutBtn').style.display = isLoggedIn ? 'block' : 'none';
-    document.getElementById('dashboardLink').style.display = isLoggedIn ? 'block' : 'none';
+    
+    const myCarsLink = document.getElementById('myCarsLink');
+    if (myCarsLink) {
+        myCarsLink.parentElement.style.display = isLoggedIn ? 'block' : 'none';
+    }
 }
 
 
@@ -83,7 +87,10 @@ document.getElementById('authForm').addEventListener('submit', async (e) => {
         const data = await res.json();
         
         if (res.ok) {
+            // Store both the token and the user's ID
             localStorage.setItem('token', data.token);
+            localStorage.setItem('userId', data._id); // This is key for ownership checks!
+            
             token = data.token;
             closeModal('auth-modal');
             checkAuth();
@@ -153,6 +160,7 @@ function toggleAuthMode() {
 
 function logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     token = null;
     checkAuth();
     location.reload();
@@ -160,38 +168,145 @@ function logout() {
 
 function showDetails(car) {
     const modalBody = document.getElementById('modal-body');
+    const currentUserId = localStorage.getItem('userId');
+    
+    const ownerId = typeof car.owner === 'object' ? car.owner._id : car.owner;
+    const isOwner = currentUserId && (String(currentUserId) === String(ownerId));
+
     const imgUrl = car.imageUrl || 'https://static9.depositphotos.com/1579454/1194/i/450/depositphotos_11943255-stock-photo-presentation-of-the-new-car.jpg';
     
     const specs = car.specs || {};
-    
-    const engine = specs.engine_type || "N/A";
-    const horsepower = specs.horsepower_hp || "N/A";
-    const transmission = specs.transmission || "N/A";
-    const drive = specs.drive_type || "N/A";
-    const fuel = specs.fuel_type || "N/A";
-    const trim = specs.trim_name || "Standard";
+    const engine = specs.engine_type || specs.engine || "N/A";
+    const hp = specs.horsepower_hp || specs.horsepower || "N/A";
+    const trans = specs.transmission || "N/A";
+    const drive = specs.drive_type || specs.drive || "N/A";
+    const fuel = specs.fuel_type || specs.fuel || "N/A";
+    const trim = specs.trim_name || specs.trim || "Standard";
 
     modalBody.innerHTML = `
         <div style="width:100%; height:300px; background:url('${imgUrl}') center/cover; border-radius: 8px; margin-bottom:20px;"></div>
         
         <div class="details-main">
             <h2>${car.brand} ${car.model}</h2>
-            <h3 style="color:#e74c3c; font-size: 1.5rem; margin: 10px 0;">$${car.price.toLocaleString()}</h3>
-            <p style="margin-bottom: 10px;"><strong>Condition:</strong> ${car.condition} | <strong>Year:</strong> ${car.year}</p>
-            <p style="color: #555; line-height: 1.6;">${car.description || 'No description provided.'}</p>
+            <h3 style="color:#ff3333; font-size: 1.8rem; margin: 10px 0;">$${car.price.toLocaleString()}</h3>
+            <p><strong>Condition:</strong> ${car.condition} | <strong>Year:</strong> ${car.year}</p>
+            <p style="color: #555; margin-top:10px; line-height: 1.6;">${car.description || 'No description provided.'}</p>
         </div>
 
-        <div class="specs-grid" style="margin-top: 25px; border-top: 2px solid #eee; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div class="spec-item"><strong>Engine:</strong> ${engine}</div>
-            <div class="spec-item"><strong>Horsepower:</strong> ${horsepower} HP</div>
-            <div class="spec-item"><strong>Transmission:</strong> ${transmission}</div>
-            <div class="spec-item"><strong>Drive Type:</strong> ${drive}</div>
-            <div class="spec-item"><strong>Fuel Type:</strong> ${fuel}</div>
-            <div class="spec-item"><strong>Trim:</strong> ${trim}</div>
+        <div class="specs-grid" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="spec-item"><i class="fa-solid fa-engine"></i> <strong>Engine:</strong> ${engine}</div>
+            <div class="spec-item"><i class="fa-solid fa-bolt"></i> <strong>Horsepower:</strong> ${hp}</div>
+            <div class="spec-item"><i class="fa-solid fa-gears"></i> <strong>Transmission:</strong> ${trans}</div>
+            <div class="spec-item"><i class="fa-solid fa-road"></i> <strong>Drive Type:</strong> ${drive}</div>
+            <div class="spec-item"><i class="fa-solid fa-gas-pump"></i> <strong>Fuel Type:</strong> ${fuel}</div>
+            <div class="spec-item"><i class="fa-solid fa-car-side"></i> <strong>Trim:</strong> ${trim}</div>
+        </div>
+
+        <div id="owner-actions" style="margin-top: 30px; display: ${isOwner ? 'flex' : 'none'}; gap: 10px;">
+            <button onclick="editCar('${car._id}')" class="btn-primary" style="background:#2ecc71; flex: 1;">
+                <i class="fa-solid fa-pen-to-square"></i> EDIT LISTING
+            </button>
+            <button onclick="deleteCar('${car._id}')" class="btn-primary" style="flex: 1;">
+                <i class="fa-solid fa-trash"></i> DELETE LISTING
+            </button>
         </div>
     `;
     openModal('details-modal');
 }
+
+async function deleteCar(id) {
+    if (!confirm('Are you sure you want to remove this listing?')) return;
+
+    try {
+        const res = await fetch(`${API_URL}/cars/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+            alert('Car removed!');
+            closeModal('details-modal');
+            fetchCars(); 
+        } else {
+            alert('Error: Not authorized');
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function editCar(id) {
+    try {
+        const res = await fetch(`${API_URL}/cars/${id}`);
+        const car = await res.json();
+
+        if (res.ok) {
+            document.getElementById('editCarId').value = car._id;
+            document.getElementById('editCarBrand').value = car.brand;
+            document.getElementById('editCarModel').value = car.model;
+            document.getElementById('editCarYear').value = car.year;
+            document.getElementById('editCarPrice').value = car.price;
+            document.getElementById('editCarImage').value = car.imageUrl;
+            document.getElementById('editCarCondition').value = car.condition;
+            document.getElementById('editCarDesc').value = car.description;
+
+            closeModal('details-modal'); 
+            openModal('edit-car-modal'); 
+        }
+    } catch (err) {
+        console.error("Error fetching car for edit:", err);
+    }
+}
+
+document.getElementById('editCarForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editCarId').value;
+
+    const updatedData = {
+        brand: document.getElementById('editCarBrand').value,
+        model: document.getElementById('editCarModel').value,
+        year: Number(document.getElementById('editCarYear').value),
+        price: Number(document.getElementById('editCarPrice').value),
+        imageUrl: document.getElementById('editCarImage').value,
+        condition: document.getElementById('editCarCondition').value,
+        description: document.getElementById('editCarDesc').value
+    };
+
+    try {
+        const res = await fetch(`${API_URL}/cars/${id}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (res.ok) {
+            alert('Listing updated successfully!');
+            closeModal('edit-car-modal');
+            fetchCars(); 
+        } else {
+            const error = await res.json();
+            alert(error.message || 'Failed to update');
+        }
+    } catch (err) {
+        console.error("Error updating car:", err);
+    }
+});
+
+function showAllCars() {
+    document.querySelector('.section-header h2').innerHTML = 'FEATURED <span>LISTINGS</span>';
+    fetchCars();
+}
+
+function filterByOwner() {
+    const currentUserId = localStorage.getItem('userId');
+    if (!currentUserId) return alert('Please login to see your listings');
+    
+    document.querySelector('.section-header h2').innerHTML = 'MY <span>LISTINGS</span>';
+    fetchCars(`?owner=${currentUserId}`); 
+}s
 
 
 function filterCars() {

@@ -29,23 +29,24 @@ exports.createCar = async (req, res) => {
 
 exports.getCars = async (req, res) => {
     try {
-        const { featured, brand, condition, maxPrice } = req.query;
+        const { featured, brand, condition, maxPrice, owner } = req.query; 
         let queryObj = {};
         
         if (featured === 'true') queryObj.isFeatured = true;
-  
         if (brand) queryObj.brand = { $regex: brand, $options: 'i' };
-  
         if (condition) queryObj.condition = condition;
-  
         if (maxPrice) queryObj.price = { $lte: Number(maxPrice) };
+
+        if (owner) {
+            queryObj.owner = owner;
+        }
   
         const cars = await Car.find(queryObj).sort({ createdAt: -1 });
         res.json(cars);
     } catch (error) {
         res.status(500).json({ message: "Error fetching cars" });
     }
-  };
+};
 
 exports.getCarById = async (req, res) => {
   const car = await Car.findById(req.params.id);

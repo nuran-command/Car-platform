@@ -29,14 +29,16 @@
                 <div class="logo">WHEEL<span>HOUSE</span></div>
                 
                 <div class="nav-links">
-                    <a href="#" class="active" onclick="showSection('home')">HOME</a>
+                    <a href="#" class="active" onclick="showAllCars()">HOME</a>
+                    
                     <div class="dropdown">
-                        <a href="#showroom">CAR LISTING <i class="fa-solid fa-chevron-down"></i></a>
+                        <a href="#showroom" onclick="showAllCars()">CAR LISTING</a>
                     </div>
+                    
                     <div class="dropdown">
-                        <a href="#">PAGES <i class="fa-solid fa-chevron-down"></i></a>
+                        <a href="#" id="myCarsLink" onclick="filterByOwner(); return false;">MY LISTINGS</a>
                     </div>
-                    <a href="#" id="dashboardLink" style="display:none;">DASHBOARD</a>
+                    
                     <a href="#">CONTACT</a>
                 </div>
     
@@ -137,6 +139,28 @@
             <span class="close" onclick="closeModal('details-modal')">&times;</span>
             <div id="modal-body" class="details-grid">
                 </div>
+        </div>
+    </div>
+    <div id="edit-car-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('edit-car-modal')">&times;</span>
+            <h2>Update Vehicle Details</h2>
+            <form id="editCarForm">
+                <input type="hidden" id="editCarId">
+                <div class="form-grid">
+                    <input type="text" id="editCarBrand" placeholder="Make" required>
+                    <input type="text" id="editCarModel" placeholder="Model" required>
+                    <input type="number" id="editCarYear" placeholder="Year" required>
+                    <input type="number" id="editCarPrice" placeholder="Price ($)" required>
+                    <input type="text" id="editCarImage" placeholder="Image URL">
+                    <select id="editCarCondition">
+                        <option value="New">New</option>
+                        <option value="Used">Used</option>
+                    </select>
+                </div>
+                <textarea id="editCarDesc" placeholder="Description..." rows="3"></textarea>
+                <button type="submit" class="btn-primary full-width">Save Changes</button>
+            </form>
         </div>
     </div>
 
